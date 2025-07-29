@@ -1,0 +1,18 @@
+:3000
+
+root * /usr/share/caddy
+file_server
+
+handle /api/products/* {
+    reverse_proxy products:8000
+}
+
+handle /api/customers/* {
+    reverse_proxy customers:8000
+}
+
+handle {
+    try_files {path} /index.html
+}
+
+

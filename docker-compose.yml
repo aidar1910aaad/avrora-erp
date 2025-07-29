@@ -1,0 +1,99 @@
+version: "3.9"
+
+services:
+
+  db_products:
+    image: postgres:15
+    container_name: erp-db-products
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: products_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_products:/var/lib/postgresql/data
+
+  db_customers:
+    image: postgres:15
+    container_name: erp-db-customers
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: customers_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata_customers:/var/lib/postgresql/data
+
+  products:
+    build:
+      context: .
+      dockerfile: docker/products.Dockerfile
+    container_name: erp-products
+    ports:
+      - "8001:8000"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db_products:5432/products_db
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@avrora.kz
+      - DJANGO_SUPERUSER_PASSWORD=admin
+    depends_on:
+      db_products:
+        condition: service_healthy
+  customers:
+    build:
+      context: .
+      dockerfile: docker/customers.Dockerfile
+    container_name: erp-customers
+    ports:
+      - "8002:8000"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db_customers:5432/customers_db
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@avrora.kz
+      - DJANGO_SUPERUSER_PASSWORD=admin
+    depends_on:
+        db_customers:
+          condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+    depends_on:
+      - products
+      - customers
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--quiet',
+          '--tries=1',
+          '--spider',
+          'http://localhost:3000',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  pgdata_products:
+  pgdata_customers:

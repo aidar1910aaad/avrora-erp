@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+html, body, #root {
+  height: 100%;
+}
+
+:root {
+  --font-main: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --color-accent: #646cff;
+  --color-accent-hover: #535bf2;
+}
+
+body {
+  @apply m-0 min-h-screen text-gray-900 font-sans antialiased;
+  font-family: var(--font-main);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+}
+
+a {
+  color: #111;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover {
+  color: #222;
+}
