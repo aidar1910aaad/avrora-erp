@@ -98,7 +98,7 @@ docker-compose logs -f
 Для каждого Django сервиса создается суперпользователь:
 - Username: admin
 - Password: admin
-Frontend 
+
 
 ```bash
 cd frontend
@@ -112,8 +112,8 @@ Backend
 ## API Endpoints
 
 ### Product Service (8001)
-- GET /api/products/ - список продуктов
-- POST /api/products/ - создание продукта
+- GET /api/products/table - список продуктов
+- POST /api/products/table - создание продукта
 ### Customer Service (8002)
-- GET /api/customers/ - список клиентов
-- POST /api/customers/ - создание клиента
+- GET /api/customers/table - список клиентов
+- POST /api/customers/table - создание клиента
